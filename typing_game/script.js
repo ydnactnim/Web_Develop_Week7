@@ -15,6 +15,9 @@ let startTime = Date.now();
 const quoteElement = document.getElementById("quote");
 const messageElement = document.getElementById("message");
 const typedValueElement = document.getElementById("typed-value");
+const modal = document.getElementById("modal");
+const modalMessage = document.getElementById("modal-message");
+const closeModal = document.getElementsByClassName("close")[0];
 
 document.getElementById("typed-value").disabled = true;
 
@@ -33,7 +36,7 @@ document.getElementById("icon").addEventListener("click", function () {
 });
 
 document.getElementById("start").addEventListener("click", () => {
-  const quoteIndex = Math.floor(Math.random() * quotes.length); // 무작위 인덱스 생성;
+  const quoteIndex = Math.floor(Math.random() * quotes.length); // 무작위 인덱스 생성
   const quote = quotes[quoteIndex]; // 무작위 인덱스 값으로 인용문 선택
 
   words = quote.split(" "); // 공백 문자를 기준으로 words 배열에 저장
@@ -69,7 +72,8 @@ typedValueElement.addEventListener("input", () => {
     const message = `CONGRATULATIONS! You finished in ${
       elapsedTime / 1000
     } seconds.`; // 타이핑 완료 메시지
-    messageElement.innerText = message; //생성된 메시지 화면에 표시
+    modalMessage.innerText = message; // 모달 메시지 설정
+    modal.style.display = "block"; // 모달 표시
 
     // input 비활성화
     document.getElementById("typed-value").disabled = true;
@@ -96,3 +100,15 @@ typedValueElement.addEventListener("input", () => {
     typedValueElement.className = "error"; // 틀리면 error 클래스 추가
   }
 });
+
+// 모달 닫기
+closeModal.onclick = function () {
+  modal.style.display = "none";
+};
+
+// 모달 외부 클릭 시 닫기
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
