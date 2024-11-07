@@ -18,6 +18,7 @@ const typedValueElement = document.getElementById("typed-value");
 const modal = document.getElementById("modal");
 const modalMessage = document.getElementById("modal-message");
 const closeModal = document.getElementsByClassName("close")[0];
+const recordList = document.getElementById("record-list");
 
 document.getElementById("typed-value").disabled = true;
 
@@ -75,6 +76,9 @@ typedValueElement.addEventListener("input", () => {
     modalMessage.innerText = message; // 모달 메시지 설정
     modal.style.display = "block"; // 모달 표시
 
+    // 최고 기록 갱신
+    updateTopRecords(elapsedTime / 1000);
+
     // input 비활성화
     document.getElementById("typed-value").disabled = true;
 
@@ -112,3 +116,31 @@ window.onclick = function (event) {
     modal.style.display = "none";
   }
 };
+
+// 최고 기록 갱신 함수
+function updateTopRecords(newRecord) {
+  let records = JSON.parse(localStorage.getItem("topRecords")) || [];
+  records.push(newRecord);
+  records.sort((a, b) => a - b);
+  if (records.length > 5) {
+    records = records.slice(0, 5);
+  }
+  localStorage.setItem("topRecords", JSON.stringify(records));
+  displayTopRecords(records);
+}
+
+// 최고 기록 표시 함수
+function displayTopRecords(records) {
+  recordList.innerHTML = "";
+  records.forEach((record, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${record} seconds`;
+    recordList.appendChild(li);
+  });
+}
+
+// 페이지 로드 시 최고 기록 표시
+document.addEventListener("DOMContentLoaded", () => {
+  const records = JSON.parse(localStorage.getItem("topRecords")) || [];
+  displayTopRecords(records);
+});
