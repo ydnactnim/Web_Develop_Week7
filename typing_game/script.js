@@ -15,25 +15,37 @@ let startTime = Date.now();
 const quoteElement = document.getElementById("quote");
 const messageElement = document.getElementById("message");
 const typedValueElement = document.getElementById("typed-value");
+const modal = document.getElementById("modal");
+const modalMessage = document.getElementById("modal-message");
+const closeModal = document.getElementsByClassName("close")[0];
+const recordList = document.getElementById("record-list");
 
 document.getElementById("typed-value").disabled = true;
 
 document.getElementById("icon").addEventListener("click", function () {
   document.body.classList.toggle("black-mode");
   document.body.classList.toggle("white-mode");
+  document
+    .getElementsByClassName("modal-content")[0]
+    .classList.toggle("black-mode");
+  document
+    .getElementsByClassName("modal-content")[0]
+    .classList.toggle("white-mode");
 
   const svgElement = document.getElementById("icon");
   svgElement.classList.toggle("invert-colors");
 
   if (document.body.classList.contains("black-mode")) {
-    quoteElement.childNodes[wordIndex].className = "highlight_dark";
+    if (quoteElement.childNodes.length != 0)
+      quoteElement.childNodes[wordIndex].className = "highlight_dark";
   } else {
-    quoteElement.childNodes[wordIndex].className = "highlight_white";
+    if (quoteElement.childNodes.length != 0)
+      quoteElement.childNodes[wordIndex].className = "highlight_white";
   }
 });
 
 document.getElementById("start").addEventListener("click", () => {
-  const quoteIndex = Math.floor(Math.random() * quotes.length); // 무작위 인덱스 생성;
+  const quoteIndex = Math.floor(Math.random() * quotes.length); // 무작위 인덱스 생성
   const quote = quotes[quoteIndex]; // 무작위 인덱스 값으로 인용문 선택
 
   words = quote.split(" "); // 공백 문자를 기준으로 words 배열에 저장
@@ -63,13 +75,29 @@ typedValueElement.addEventListener("input", () => {
   const currentWord = words[wordIndex]; // 현재 타이핑할 단어를 currentWord 에 저장
   const typedValue = typedValueElement.value; // 입력한 값을 typedValue에 저장
 
+  // 애니메이션 클래스 추가
+  typedValueElement.classList.add("input-grow");
+
+  // 애니메이션이 끝난 후 클래스 제거
+  typedValueElement.addEventListener(
+    "animationend",
+    () => {
+      typedValueElement.classList.remove("input-grow");
+    },
+    { once: true }
+  );
+
   if (typedValue === currentWord && wordIndex === words.length - 1) {
     // 마지막 단어까지 정확히 입력했는 지 체크
     const elapsedTime = new Date().getTime() - startTime; // 타이핑에 소요된 시간 계산
     const message = `CONGRATULATIONS! You finished in ${
       elapsedTime / 1000
     } seconds.`; // 타이핑 완료 메시지
-    messageElement.innerText = message; //생성된 메시지 화면에 표시
+    modalMessage.innerText = message; // 모달 메시지 설정
+    modal.style.display = "block"; // 모달 표시
+
+    // 최고 기록 갱신
+    updateTopRecords(elapsedTime / 1000);
 
     // input 비활성화
     document.getElementById("typed-value").disabled = true;
@@ -95,4 +123,44 @@ typedValueElement.addEventListener("input", () => {
   } else {
     typedValueElement.className = "error"; // 틀리면 error 클래스 추가
   }
+});
+
+// 모달 닫기
+closeModal.onclick = function () {
+  modal.style.display = "none";
+};
+
+// 모달 외부 클릭 시 닫기
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+// 최고 기록 갱신 함수
+function updateTopRecords(newRecord) {
+  let records = JSON.parse(localStorage.getItem("topRecords")) || [];
+  records.push(newRecord);
+  records.sort((a, b) => a - b);
+  if (records.length > 5) {
+    records = records.slice(0, 5);
+  }
+  localStorage.setItem("topRecords", JSON.stringify(records));
+  displayTopRecords(records);
+}
+
+// 최고 기록 표시 함수
+function displayTopRecords(records) {
+  recordList.innerHTML = "";
+  records.forEach((record, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${record} seconds`;
+    recordList.appendChild(li);
+  });
+}
+
+// 페이지 로드 시 최고 기록 표시
+document.addEventListener("DOMContentLoaded", () => {
+  const records = JSON.parse(localStorage.getItem("topRecords")) || [];
+  displayTopRecords(records);
 });
