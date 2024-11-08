@@ -25,14 +25,22 @@ document.getElementById("typed-value").disabled = true;
 document.getElementById("icon").addEventListener("click", function () {
   document.body.classList.toggle("black-mode");
   document.body.classList.toggle("white-mode");
+  document
+    .getElementsByClassName("modal-content")[0]
+    .classList.toggle("black-mode");
+  document
+    .getElementsByClassName("modal-content")[0]
+    .classList.toggle("white-mode");
 
   const svgElement = document.getElementById("icon");
   svgElement.classList.toggle("invert-colors");
 
   if (document.body.classList.contains("black-mode")) {
-    quoteElement.childNodes[wordIndex].className = "highlight_dark";
+    if (quoteElement.childNodes.length != 0)
+      quoteElement.childNodes[wordIndex].className = "highlight_dark";
   } else {
-    quoteElement.childNodes[wordIndex].className = "highlight_white";
+    if (quoteElement.childNodes.length != 0)
+      quoteElement.childNodes[wordIndex].className = "highlight_white";
   }
 });
 
