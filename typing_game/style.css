@@ -90,3 +90,19 @@ body.white-mode {
   text-decoration: none;
   cursor: pointer;
 }
+
+@keyframes inputGrow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.input-grow {
+  animation: inputGrow 0.3s ease-in-out;
+}

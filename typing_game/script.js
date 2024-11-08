@@ -75,6 +75,18 @@ typedValueElement.addEventListener("input", () => {
   const currentWord = words[wordIndex]; // 현재 타이핑할 단어를 currentWord 에 저장
   const typedValue = typedValueElement.value; // 입력한 값을 typedValue에 저장
 
+  // 애니메이션 클래스 추가
+  typedValueElement.classList.add("input-grow");
+
+  // 애니메이션이 끝난 후 클래스 제거
+  typedValueElement.addEventListener(
+    "animationend",
+    () => {
+      typedValueElement.classList.remove("input-grow");
+    },
+    { once: true }
+  );
+
   if (typedValue === currentWord && wordIndex === words.length - 1) {
     // 마지막 단어까지 정확히 입력했는 지 체크
     const elapsedTime = new Date().getTime() - startTime; // 타이핑에 소요된 시간 계산
